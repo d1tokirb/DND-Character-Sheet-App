@@ -1,0 +1,495 @@
+import tkinter as tk
+from tkinter import ttk
+from tkinter import filedialog
+
+# --- Pillow is optional ---
+try:
+    from PIL import Image, ImageTk  # type: ignore
+    PIL_AVAILABLE = True
+except Exception:
+    Image = None
+    ImageTk = None
+    PIL_AVAILABLE = False
+
+
+class DnDCharacterSheet(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("D&D 5e Character Sheet")
+        self.geometry("1920x1080")
+
+        canvas = tk.Canvas(self)
+        scrollbar = tk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        scroll_frame = tk.Frame(canvas)
+
+        scroll_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+
+        canvas.create_window((0, 0), window=scroll_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        top_frame = tk.Frame(scroll_frame)
+        top_frame.pack(fill="x", padx=10, pady=10)
+
+        # Profile Picture
+        self.profile_frame = tk.Frame(top_frame)
+        self.profile_frame.pack(side="left", padx=5)
+
+        # Default 48x48 gray image with circular mask:
+        if PIL_AVAILABLE:
+            default_img = Image.new("RGB", (48, 48), color="gray")
+            mask = Image.new("L", (48, 48), 0)
+            draw = Image.new("L", (48, 48), 0)
+            from PIL import ImageDraw
+            mask_draw = ImageDraw.Draw(mask)
+            mask_draw.ellipse((0, 0, 48, 48), fill=255)
+            default_img.putalpha(mask)
+            self.profile_photo = ImageTk.PhotoImage(default_img)
+        else:
+            self.profile_photo = tk.PhotoImage(width=48, height=48)
+            try:
+                # fill the whole area with a light gray
+                self.profile_photo.put("gray80", to=(0, 0, 48, 48))
+            except Exception:
+                pass
+
+        self.profile_label = tk.Label(self.profile_frame, image=self.profile_photo, width=48, height=48)
+        self.profile_label.pack()
+        self.profile_label.bind("<Button-1>", lambda e: self.change_profile_picture())
+
+        # Character Name
+        self.name_var = tk.StringVar(value="Character Name")
+        tk.Label(top_frame, text="Name:").pack(side="left")
+        self.name_entry = tk.Entry(top_frame, textvariable=self.name_var, font=("Arial", 14), width=20)
+        self.name_entry.pack(side="left", padx=5)
+
+        # Character Class
+        self.class_var = tk.StringVar(value="Select Class")
+        classes = [
+            "Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer",
+            "Warlock", "Wizard", "Artificer"
+        ]
+        self.class_dropdown = ttk.Combobox(top_frame, textvariable=self.class_var, values=classes, state="readonly", width=15)
+        self.class_dropdown.pack(side="left", padx=5)
+
+        # Character Subclass
+        self.subclass_var = tk.StringVar(value="Select Subclass")
+        self.subclass_dropdown = ttk.Combobox(
+            top_frame,
+            textvariable=self.subclass_var,
+            state="readonly",
+            width=25
+        )
+        self.subclass_dropdown.pack(side="left", padx=5)
+
+        # Character Background
+        self.background_var = tk.StringVar(value="Select Background")
+        backgrounds = [
+            # PHB
+            "Acolyte", "Charlatan", "Criminal", "Entertainer", "Folk Hero", "Guild Artisan", "Guild Merchant", "Hermit", "Noble",
+            "Outlander", "Sage", "Sailor", "Soldier", "Urchin",
+            # SCAG
+            "City Watch", "Clan Crafter", "Cloistered Scholar", "Courtier", "Faction Agent", "Far Traveler", "Inheritor",
+            "Knight of the Order", "Mercenary Veteran", "Urban Bounty Hunter", "Uthgardt Tribe Member", "Waterdhavian Noble",
+            # ToA
+            "Anthropologist", "Archaeologist",
+            # EGtW
+            "Grinner", "Knight of the Crown", "Knight of the Shield", "Knight of the Sword", "Knight of the Rose", "Order of the Gauntlet", "Watcher",
+            # Ravnica
+            "Boros Legionnaire", "Dimir Operative", "Golgari Agent", "Gruul Anarch", "Izzet Engineer", "Orzhov Representative", "Rakdos Cultist", "Selesnya Initiate", "Simic Scientist",
+            # Strixhaven
+            "Lorehold Student", "Prismari Student", "Quandrix Student", "Silverquill Student", "Witherbloom Student",
+            # Wildemount
+            "Fisher", "Marine", "Smuggler", "Shipwright",
+            # TCoE
+            "Feylost", "Haunted One", "Investigator", "Revenant",
+            # Other
+            "Gladiator", "Knight", "Pirate"
+        ]
+        self.background_dropdown = ttk.Combobox(top_frame, textvariable=self.background_var, values=backgrounds, state="readonly", width=20)
+        self.background_dropdown.pack(side="left", padx=5)
+
+        # Alignment Dropdown
+        self.alignment_var = tk.StringVar(value="Select Alignment")
+        alignments = [
+            "Lawful Good", "Neutral Good", "Chaotic Good",
+            "Lawful Neutral", "True Neutral", "Chaotic Neutral",
+            "Lawful Evil", "Neutral Evil", "Chaotic Evil"
+        ]
+        self.alignment_dropdown = ttk.Combobox(
+            top_frame,
+            textvariable=self.alignment_var,
+            values=alignments,
+            state="readonly",
+            width=20
+        )
+        self.alignment_dropdown.pack(side="left", padx=5)
+
+        self.subclasses = {
+            "Barbarian": [
+                "Path of the Berserker", # PHB
+                "Path of the Totem Warrior", # PHB
+                "Path of the Battlerager", # SCAG
+                "Path of the Ancestral Guardian", # XGtE
+                "Path of the Storm Herald", # XGtE
+                "Path of the Zealot", # XGtE
+                "Path of the Beast", # TCoE
+                "Path of Wild Magic", # TCoE
+            ],
+            "Bard": [
+                "College of Lore", # PHB
+                "College of Valor", # PHB
+                "College of Glamour", # XGtE
+                "College of Swords", # XGtE
+                "College of Whispers", # XGtE
+                "College of Eloquence", # MOoT/XGtE/TCoE
+                "College of Creation", # TCoE
+                "College of Spirits", # VRGtR
+            ],
+            "Cleric": [
+                "Knowledge Domain", # PHB
+                "Life Domain", # PHB
+                "Light Domain", # PHB
+                "Nature Domain", # PHB
+                "Tempest Domain", # PHB
+                "Trickery Domain", # PHB
+                "War Domain", # PHB
+                "Arcana Domain", # SCAG
+                "Death Domain", # DMG
+                "Forge Domain", # XGtE
+                "Grave Domain", # XGtE
+                "Order Domain", # GGtR/TCoE
+                "Peace Domain", # TCoE
+                "Twilight Domain", # TCoE
+                "Blood Domain", # EGtW
+            ],
+            "Druid": [
+                "Circle of the Land", # PHB
+                "Circle of the Moon", # PHB
+                "Circle of Dreams", # XGtE
+                "Circle of the Shepherd", # XGtE
+                "Circle of Spores", # GGtR
+                "Circle of Stars", # TCoE
+                "Circle of Wildfire", # TCoE
+            ],
+            "Fighter": [
+                "Champion", # PHB
+                "Battle Master", # PHB
+                "Eldritch Knight", # PHB
+                "Arcane Archer", # XGtE
+                "Cavalier", # XGtE
+                "Samurai", # XGtE
+                "Purple Dragon Knight (Banneret)", # SCAG
+                "Echo Knight", # EGtW
+                "Psi Warrior", # TCoE
+                "Rune Knight", # TCoE
+                "Gunslinger", # CR/MCDM
+            ],
+            "Monk": [
+                "Way of the Open Hand", # PHB
+                "Way of Shadow", # PHB
+                "Way of the Four Elements", # PHB
+                "Way of the Drunken Master", # XGtE
+                "Way of the Kensei", # XGtE
+                "Way of the Sun Soul", # SCAG/XGtE
+                "Way of Mercy", # TCoE
+                "Way of the Astral Self", # TCoE
+            ],
+            "Paladin": [
+                "Oath of Devotion", # PHB
+                "Oath of the Ancients", # PHB
+                "Oath of Vengeance", # PHB
+                "Oath of the Crown", # SCAG
+                "Oath of Conquest", # XGtE
+                "Oath of Redemption", # XGtE
+                "Oath of Glory", # MOoT/TCoE
+                "Oath of the Watchers", # TCoE
+                "Oathbreaker", # DMG
+            ],
+            "Ranger": [
+                "Hunter", # PHB
+                "Beast Master", # PHB
+                "Gloom Stalker", # XGtE
+                "Horizon Walker", # XGtE
+                "Monster Slayer", # XGtE
+                "Fey Wanderer", # TCoE
+                "Swarmkeeper", # TCoE
+                "Drakewarden", # FToD
+            ],
+            "Rogue": [
+                "Thief", # PHB
+                "Assassin", # PHB
+                "Arcane Trickster", # PHB
+                "Mastermind", # SCAG/XGtE
+                "Swashbuckler", # SCAG/XGtE
+                "Inquisitive", # XGtE
+                "Scout", # XGtE
+                "Phantom", # TCoE
+                "Soulknife", # TCoE
+            ],
+            "Sorcerer": [
+                "Draconic Bloodline", # PHB
+                "Wild Magic", # PHB
+                "Divine Soul", # XGtE
+                "Shadow Magic", # XGtE
+                "Storm Sorcery", # SCAG/XGtE
+                "Aberrant Mind", # TCoE
+                "Clockwork Soul", # TCoE
+            ],
+            "Warlock": [
+                "The Archfey", # PHB
+                "The Fiend", # PHB
+                "The Great Old One", # PHB
+                "The Undying", # SCAG
+                "The Celestial", # XGtE
+                "The Hexblade", # XGtE
+                "The Fathomless", # TCoE
+                "The Genie", # TCoE
+                "The Undead", # VRGtR
+            ],
+            "Wizard": [
+                "School of Abjuration", # PHB
+                "School of Conjuration", # PHB
+                "School of Divination", # PHB
+                "School of Enchantment", # PHB
+                "School of Evocation", # PHB
+                "School of Illusion", # PHB
+                "School of Necromancy", # PHB
+                "School of Transmutation", # PHB
+                "Bladesinging", # SCAG/TCoE
+                "War Magic", # XGtE
+                "Order of Scribes", # TCoE
+            ],
+            "Artificer": [
+                "Alchemist", # ERftLW/TCoE
+                "Artillerist", # ERftLW/TCoE
+                "Battle Smith", # ERftLW/TCoE
+                "Armorer", # TCoE
+            ],
+        }
+
+        self.class_dropdown.bind("<<ComboboxSelected>>", self.update_subclasses)
+
+        main_frame = tk.Frame(scroll_frame)
+        main_frame.pack(fill="both", expand=True)
+
+        # Ability Scores
+        stats_frame = tk.Frame(main_frame)
+        stats_frame.pack(side="left", anchor="n", padx=10, pady=10, fill="both", expand=True)
+
+        self.stats = {}
+        self.stat_mod_labels = {}
+
+        abilities = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]
+
+        for ability in abilities:
+            row = tk.Frame(stats_frame)
+            row.pack(anchor="w", pady=2)
+
+            tk.Label(row, text=ability + ":").pack(side="left")
+
+            var = tk.IntVar(value=10)
+            entry = tk.Entry(row, textvariable=var, width=5)
+            entry.pack(side="left", padx=5)
+
+            mod_label = tk.Label(row, text="+0", width=4)
+            mod_label.pack(side="left")
+
+            var.trace_add("write", lambda *args, v=var, l=mod_label: self.update_modifier(v, l))
+
+            self.stats[ability] = var
+            self.stat_mod_labels[ability] = mod_label
+
+        center_frame = tk.Frame(main_frame)
+        center_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
+
+        # Health
+        self.current_hp = tk.IntVar(value=20)
+        self.max_hp = tk.IntVar(value=30)
+
+        tk.Label(center_frame, text="Hit Points:").pack(anchor="w", pady=(0, 5))
+
+        hp_frame = tk.Frame(center_frame)
+        hp_frame.pack(fill="x", pady=(0, 10))
+
+        self.current_hp_entry = tk.Entry(hp_frame, textvariable=self.current_hp, width=5)
+        self.current_hp_entry.pack(side="left")
+
+        tk.Label(hp_frame, text="/").pack(side="left")
+
+        self.max_hp_entry = tk.Entry(hp_frame, textvariable=self.max_hp, width=5)
+        self.max_hp_entry.pack(side="left")
+
+        tk.Button(hp_frame, text="Update", command=self.update_health).pack(side="left", padx=10)
+
+        self.hp_bar = ttk.Progressbar(center_frame, maximum=self.max_hp.get(), value=self.current_hp.get())
+        self.hp_bar.pack(fill="x", pady=(0, 20))
+
+        self.update_health()
+
+        # Experience Points and Level
+        self.current_xp = tk.IntVar(value=0)
+        self.level = tk.IntVar(value=1)
+
+        tk.Label(center_frame, text="Experience:").pack(anchor="w", pady=(0, 5))
+
+        xp_frame = tk.Frame(center_frame)
+        xp_frame.pack(fill="x")
+
+        self.current_xp_entry = tk.Entry(xp_frame, textvariable=self.current_xp, width=7)
+        self.current_xp_entry.pack(side="left")
+
+        tk.Button(xp_frame, text="Update", command=self.update_xp).pack(side="left", padx=10)
+
+        self.xp_bar = ttk.Progressbar(center_frame, maximum=300, value=self.current_xp.get())
+        self.xp_bar.pack(fill="x", pady=5)
+
+        self.level_label = tk.Label(center_frame, text=f"Level: {self.level.get()}")
+        self.level_label.pack(anchor="w", pady=(0, 10))
+
+        self.update_xp()
+
+        # Skills and Proficiency Bonuses
+        skills_frame = tk.Frame(main_frame)
+        skills_frame.pack(side="right", anchor="n", padx=10, pady=10, fill="both", expand=True)
+
+        tk.Label(skills_frame, text="Skills").pack(anchor="w")
+
+        self.skills = {}
+        skills_list = {
+            "Strength": ["Athletics"],
+            "Dexterity": ["Acrobatics", "Sleight of Hand", "Stealth"],
+            "Intelligence": ["Arcana", "History", "Investigation", "Nature", "Religion"],
+            "Wisdom": ["Animal Handling", "Insight", "Medicine", "Perception", "Survival"],
+            "Charisma": ["Deception", "Intimidation", "Performance", "Persuasion"]
+        }
+
+        for ability, skillnames in skills_list.items():
+            for skill in skillnames:
+                row = tk.Frame(skills_frame)
+                row.pack(anchor="w", pady=1)
+                tk.Label(row, text=skill + f" ({ability[:3]})").pack(side="left")
+                label = tk.Label(row, text="+0", width=4)
+                label.pack(side="left")
+                self.skills[skill] = (ability, label)
+
+        self.bind_all("<Button-1>", self.clear_focus)
+
+    def clear_focus(self, event):
+        widget = event.widget
+        # If the clicked widget is not an Entry or Combobox, remove focus
+        if not isinstance(widget, (tk.Entry, ttk.Combobox)):
+            self.focus_set()
+
+    def update_subclasses(self, event=None):
+        chosen_class = self.class_var.get()
+        subclasses = self.subclasses.get(chosen_class, [])
+        if subclasses:
+            self.subclass_dropdown.config(values=subclasses)
+            self.subclass_var.set("Select Subclass")
+        else:
+            self.subclass_dropdown.config(values=[])
+            self.subclass_var.set("No subclass available")
+
+    def change_profile_picture(self):
+        # Use broader types if Pillow is available; otherwise limit to PNG/GIF (native Tk)
+        filetypes = [("Image files", "*.png *.jpg *.jpeg *.gif")] if PIL_AVAILABLE else [("PNG or GIF", "*.png *.gif")]
+        file_path = filedialog.askopenfilename(filetypes=filetypes)
+        if file_path:
+            try:
+                if PIL_AVAILABLE:
+                    img = Image.open(file_path)
+                    # Prefer LANCZOS, fall back to BICUBIC/3 if not present
+                    resample = getattr(Image, "LANCZOS", getattr(Image, "BICUBIC", 3))
+                    img = img.resize((48, 48), resample)
+                    mask = Image.new("L", (48, 48), 0)
+                    from PIL import ImageDraw
+                    mask_draw = ImageDraw.Draw(mask)
+                    mask_draw.ellipse((0, 0, 48, 48), fill=255)
+                    img.putalpha(mask)
+                    photo = ImageTk.PhotoImage(img)
+                else:
+                    # tk.PhotoImage supports PNG/GIF natively
+                    photo = tk.PhotoImage(file=file_path)
+                self.profile_photo = photo
+                self.profile_label.config(image=self.profile_photo)
+                self.profile_label.image = self.profile_photo
+            except Exception as e:
+                print("Error loading image:", e)
+
+    def update_health(self):
+        """Update the health bar to reflect current HP"""
+        try:
+            current = int(self.current_hp.get())
+            maximum = int(self.max_hp.get())
+            if maximum <= 0:
+                maximum = 1
+                self.max_hp.set(1)
+
+            if current > maximum:
+                current = maximum
+                self.current_hp.set(maximum)
+            elif current < 0:
+                current = 0
+                self.current_hp.set(0)
+
+            self.hp_bar.config(maximum=maximum, value=current)
+        except ValueError:
+            pass
+
+    def update_xp(self):
+        """Update the XP bar and level based on current XP using D&D 5e progression"""
+        xp_table = {
+            1: 0,  2: 300,  3: 900,   4: 2700,  5: 6500,
+            6: 14000, 7: 23000, 8: 34000, 9: 48000, 10: 64000,
+            11: 85000, 12: 100000, 13: 120000, 14: 140000, 15: 165000,
+            16: 195000, 17: 225000, 18: 265000, 19: 305000, 20: 355000,
+        }
+        try:
+            current = int(self.current_xp.get())
+            if current < 0:
+                current = 0
+                self.current_xp.set(0)
+            # Determine level
+            level = 1
+            for lvl in range(1, 21):
+                if current >= xp_table[lvl]:
+                    level = lvl
+                else:
+                    break
+            self.level.set(level)
+            # Next level threshold for the bar
+            next_level_xp = xp_table[level + 1] if level < 20 else xp_table[20]
+            bar_value = current if current <= next_level_xp else next_level_xp
+            self.xp_bar.config(maximum=next_level_xp, value=bar_value)
+            self.level_label.config(text=f"Level: {self.level.get()}")
+        except Exception:
+            pass
+
+    def update_modifier(self, var, label):
+        try:
+            score = int(var.get())
+            modifier = (score - 10) // 2
+            label.config(text=f"+{modifier}" if modifier >= 0 else f"{modifier}")
+        except Exception:
+            label.config(text="")
+        self.update_skills()
+
+    def update_skills(self):
+        for skill, (ability, label) in self.skills.items():
+            try:
+                score = int(self.stats[ability].get())
+                modifier = (score - 10) // 2
+                label.config(text=f"+{modifier}" if modifier >= 0 else f"{modifier}")
+            except Exception:
+                label.config(text="")
+
+
+if __name__ == "__main__":
+    app = DnDCharacterSheet()
+    app.mainloop()
