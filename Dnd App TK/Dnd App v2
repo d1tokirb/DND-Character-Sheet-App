@@ -72,7 +72,7 @@ class DnDCharacterSheet(tk.Tk):
         self.class_var = tk.StringVar(value="Select Class")
         classes = [
             "Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer",
-            "Warlock", "Wizard", "Artificer", "Blood Hunter"
+            "Warlock", "Wizard", "Artificer"
         ]
         self.class_dropdown = ttk.Combobox(top_frame, textvariable=self.class_var, values=classes, state="readonly", width=15)
         self.class_dropdown.pack(side="left", padx=5)
@@ -113,6 +113,22 @@ class DnDCharacterSheet(tk.Tk):
         ]
         self.background_dropdown = ttk.Combobox(top_frame, textvariable=self.background_var, values=backgrounds, state="readonly", width=20)
         self.background_dropdown.pack(side="left", padx=5)
+
+        # Alignment Dropdown
+        self.alignment_var = tk.StringVar(value="Select Alignment")
+        alignments = [
+            "Lawful Good", "Neutral Good", "Chaotic Good",
+            "Lawful Neutral", "True Neutral", "Chaotic Neutral",
+            "Lawful Evil", "Neutral Evil", "Chaotic Evil"
+        ]
+        self.alignment_dropdown = ttk.Combobox(
+            top_frame,
+            textvariable=self.alignment_var,
+            values=alignments,
+            state="readonly",
+            width=20
+        )
+        self.alignment_dropdown.pack(side="left", padx=5)
 
         self.subclasses = {
             "Barbarian": [
@@ -254,12 +270,6 @@ class DnDCharacterSheet(tk.Tk):
                 "Artillerist", # ERftLW/TCoE
                 "Battle Smith", # ERftLW/TCoE
                 "Armorer", # TCoE
-            ],
-            "Blood Hunter": [
-                "Order of the Ghostslayer",
-                "Order of the Lycan",
-                "Order of the Mutant",
-                "Order of the Profane Soul",
             ],
         }
 
