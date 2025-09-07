@@ -71,22 +71,210 @@ class DnDCharacterSheet(tk.Tk):
         # Character Class
         self.class_var = tk.StringVar(value="Select Class")
         classes = [
-            "Barbarian", "Bard", "Cleric", "Druid", "Fighter",
-            "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer",
-            "Warlock", "Wizard"
+            "Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer",
+            "Warlock", "Wizard", "Artificer"
         ]
         self.class_dropdown = ttk.Combobox(top_frame, textvariable=self.class_var, values=classes, state="readonly", width=15)
         self.class_dropdown.pack(side="left", padx=5)
 
+        # Character Subclass
+        self.subclass_var = tk.StringVar(value="Select Subclass")
+        self.subclass_dropdown = ttk.Combobox(
+            top_frame,
+            textvariable=self.subclass_var,
+            state="readonly",
+            width=25
+        )
+        self.subclass_dropdown.pack(side="left", padx=5)
+
         # Character Background
         self.background_var = tk.StringVar(value="Select Background")
         backgrounds = [
-            "Acolyte", "Charlatan", "Criminal", "Entertainer", "Folk Hero",
-            "Guild Artisan", "Hermit", "Noble", "Outlander", "Sage",
-            "Sailor", "Soldier", "Urchin"
+            # PHB
+            "Acolyte", "Charlatan", "Criminal", "Entertainer", "Folk Hero", "Guild Artisan", "Guild Merchant", "Hermit", "Noble",
+            "Outlander", "Sage", "Sailor", "Soldier", "Urchin",
+            # SCAG
+            "City Watch", "Clan Crafter", "Cloistered Scholar", "Courtier", "Faction Agent", "Far Traveler", "Inheritor",
+            "Knight of the Order", "Mercenary Veteran", "Urban Bounty Hunter", "Uthgardt Tribe Member", "Waterdhavian Noble",
+            # ToA
+            "Anthropologist", "Archaeologist",
+            # EGtW
+            "Grinner", "Knight of the Crown", "Knight of the Shield", "Knight of the Sword", "Knight of the Rose", "Order of the Gauntlet", "Watcher",
+            # Ravnica
+            "Boros Legionnaire", "Dimir Operative", "Golgari Agent", "Gruul Anarch", "Izzet Engineer", "Orzhov Representative", "Rakdos Cultist", "Selesnya Initiate", "Simic Scientist",
+            # Strixhaven
+            "Lorehold Student", "Prismari Student", "Quandrix Student", "Silverquill Student", "Witherbloom Student",
+            # Wildemount
+            "Fisher", "Marine", "Smuggler", "Shipwright",
+            # TCoE
+            "Feylost", "Haunted One", "Investigator", "Revenant",
+            # Other
+            "Gladiator", "Knight", "Pirate"
         ]
         self.background_dropdown = ttk.Combobox(top_frame, textvariable=self.background_var, values=backgrounds, state="readonly", width=20)
         self.background_dropdown.pack(side="left", padx=5)
+
+        # Alignment Dropdown
+        self.alignment_var = tk.StringVar(value="Select Alignment")
+        alignments = [
+            "Lawful Good", "Neutral Good", "Chaotic Good",
+            "Lawful Neutral", "True Neutral", "Chaotic Neutral",
+            "Lawful Evil", "Neutral Evil", "Chaotic Evil"
+        ]
+        self.alignment_dropdown = ttk.Combobox(
+            top_frame,
+            textvariable=self.alignment_var,
+            values=alignments,
+            state="readonly",
+            width=20
+        )
+        self.alignment_dropdown.pack(side="left", padx=5)
+
+        self.subclasses = {
+            "Barbarian": [
+                "Path of the Berserker", # PHB
+                "Path of the Totem Warrior", # PHB
+                "Path of the Battlerager", # SCAG
+                "Path of the Ancestral Guardian", # XGtE
+                "Path of the Storm Herald", # XGtE
+                "Path of the Zealot", # XGtE
+                "Path of the Beast", # TCoE
+                "Path of Wild Magic", # TCoE
+            ],
+            "Bard": [
+                "College of Lore", # PHB
+                "College of Valor", # PHB
+                "College of Glamour", # XGtE
+                "College of Swords", # XGtE
+                "College of Whispers", # XGtE
+                "College of Eloquence", # MOoT/XGtE/TCoE
+                "College of Creation", # TCoE
+                "College of Spirits", # VRGtR
+            ],
+            "Cleric": [
+                "Knowledge Domain", # PHB
+                "Life Domain", # PHB
+                "Light Domain", # PHB
+                "Nature Domain", # PHB
+                "Tempest Domain", # PHB
+                "Trickery Domain", # PHB
+                "War Domain", # PHB
+                "Arcana Domain", # SCAG
+                "Death Domain", # DMG
+                "Forge Domain", # XGtE
+                "Grave Domain", # XGtE
+                "Order Domain", # GGtR/TCoE
+                "Peace Domain", # TCoE
+                "Twilight Domain", # TCoE
+                "Blood Domain", # EGtW
+            ],
+            "Druid": [
+                "Circle of the Land", # PHB
+                "Circle of the Moon", # PHB
+                "Circle of Dreams", # XGtE
+                "Circle of the Shepherd", # XGtE
+                "Circle of Spores", # GGtR
+                "Circle of Stars", # TCoE
+                "Circle of Wildfire", # TCoE
+            ],
+            "Fighter": [
+                "Champion", # PHB
+                "Battle Master", # PHB
+                "Eldritch Knight", # PHB
+                "Arcane Archer", # XGtE
+                "Cavalier", # XGtE
+                "Samurai", # XGtE
+                "Purple Dragon Knight (Banneret)", # SCAG
+                "Echo Knight", # EGtW
+                "Psi Warrior", # TCoE
+                "Rune Knight", # TCoE
+                "Gunslinger", # CR/MCDM
+            ],
+            "Monk": [
+                "Way of the Open Hand", # PHB
+                "Way of Shadow", # PHB
+                "Way of the Four Elements", # PHB
+                "Way of the Drunken Master", # XGtE
+                "Way of the Kensei", # XGtE
+                "Way of the Sun Soul", # SCAG/XGtE
+                "Way of Mercy", # TCoE
+                "Way of the Astral Self", # TCoE
+            ],
+            "Paladin": [
+                "Oath of Devotion", # PHB
+                "Oath of the Ancients", # PHB
+                "Oath of Vengeance", # PHB
+                "Oath of the Crown", # SCAG
+                "Oath of Conquest", # XGtE
+                "Oath of Redemption", # XGtE
+                "Oath of Glory", # MOoT/TCoE
+                "Oath of the Watchers", # TCoE
+                "Oathbreaker", # DMG
+            ],
+            "Ranger": [
+                "Hunter", # PHB
+                "Beast Master", # PHB
+                "Gloom Stalker", # XGtE
+                "Horizon Walker", # XGtE
+                "Monster Slayer", # XGtE
+                "Fey Wanderer", # TCoE
+                "Swarmkeeper", # TCoE
+                "Drakewarden", # FToD
+            ],
+            "Rogue": [
+                "Thief", # PHB
+                "Assassin", # PHB
+                "Arcane Trickster", # PHB
+                "Mastermind", # SCAG/XGtE
+                "Swashbuckler", # SCAG/XGtE
+                "Inquisitive", # XGtE
+                "Scout", # XGtE
+                "Phantom", # TCoE
+                "Soulknife", # TCoE
+            ],
+            "Sorcerer": [
+                "Draconic Bloodline", # PHB
+                "Wild Magic", # PHB
+                "Divine Soul", # XGtE
+                "Shadow Magic", # XGtE
+                "Storm Sorcery", # SCAG/XGtE
+                "Aberrant Mind", # TCoE
+                "Clockwork Soul", # TCoE
+            ],
+            "Warlock": [
+                "The Archfey", # PHB
+                "The Fiend", # PHB
+                "The Great Old One", # PHB
+                "The Undying", # SCAG
+                "The Celestial", # XGtE
+                "The Hexblade", # XGtE
+                "The Fathomless", # TCoE
+                "The Genie", # TCoE
+                "The Undead", # VRGtR
+            ],
+            "Wizard": [
+                "School of Abjuration", # PHB
+                "School of Conjuration", # PHB
+                "School of Divination", # PHB
+                "School of Enchantment", # PHB
+                "School of Evocation", # PHB
+                "School of Illusion", # PHB
+                "School of Necromancy", # PHB
+                "School of Transmutation", # PHB
+                "Bladesinging", # SCAG/TCoE
+                "War Magic", # XGtE
+                "Order of Scribes", # TCoE
+            ],
+            "Artificer": [
+                "Alchemist", # ERftLW/TCoE
+                "Artillerist", # ERftLW/TCoE
+                "Battle Smith", # ERftLW/TCoE
+                "Armorer", # TCoE
+            ],
+        }
+
+        self.class_dropdown.bind("<<ComboboxSelected>>", lambda e: (self.update_subclasses(), self.update_features()))
+        self.subclass_dropdown.bind("<<ComboboxSelected>>", lambda e: self.update_features())
 
         main_frame = tk.Frame(scroll_frame)
         main_frame.pack(fill="both", expand=True)
@@ -191,6 +379,288 @@ class DnDCharacterSheet(tk.Tk):
                 label.pack(side="left")
                 self.skills[skill] = (ability, label)
 
+        # Features & Traits
+        features_frame = tk.Frame(main_frame)
+        features_frame.pack(side="bottom", fill="both", expand=True, padx=10, pady=10)
+        tk.Label(features_frame, text="Features & Traits").pack(anchor="w")
+        self.features_text = tk.Text(features_frame, width=80, height=10, wrap="word")
+        self.features_text.pack(fill="both", expand=True)
+
+        # Official 5e class and subclass features (main early features, can be expanded)
+        self.class_features = {
+            "Barbarian": {
+                1: ["Rage", "Unarmored Defense"],
+                2: ["Reckless Attack", "Danger Sense"],
+            },
+            "Bard": {
+                1: ["Spellcasting", "Bardic Inspiration (d6)"],
+            },
+            "Cleric": {
+                1: ["Spellcasting", "Divine Domain"],
+            },
+            "Druid": {
+                1: ["Druidic", "Spellcasting"],
+                2: ["Wild Shape", "Druid Circle"],
+            },
+            "Fighter": {
+                1: ["Fighting Style", "Second Wind"],
+                2: ["Action Surge"],
+            },
+            "Monk": {
+                1: ["Unarmored Defense", "Martial Arts"],
+                2: ["Ki", "Unarmored Movement"],
+            },
+            "Paladin": {
+                1: ["Divine Sense", "Lay on Hands"],
+                2: ["Fighting Style", "Spellcasting", "Divine Smite"],
+            },
+            "Ranger": {
+                1: ["Favored Enemy", "Natural Explorer"],
+                2: ["Fighting Style", "Spellcasting"],
+            },
+            "Rogue": {
+                1: ["Expertise", "Sneak Attack", "Thieves' Cant"],
+                2: ["Cunning Action"],
+            },
+            "Sorcerer": {
+                1: ["Spellcasting", "Sorcerous Origin"],
+                2: ["Font of Magic"],
+            },
+            "Warlock": {
+                1: ["Otherworldly Patron", "Pact Magic"],
+                2: ["Eldritch Invocations"],
+            },
+            "Wizard": {
+                1: ["Spellcasting", "Arcane Recovery"],
+            },
+            "Artificer": {
+                1: ["Magical Tinkering", "Spellcasting"],
+                2: ["Infuse Item"],
+            },
+        }
+        # Feature descriptions: (class, subclass or None, feature name) -> description
+        self.feature_descriptions = {}
+
+        # Subclass features: (class, subclass) -> {level: [features]}
+        self.subclass_features = {
+            # BARBARIAN
+            ("Barbarian", "Path of the Berserker"): {
+                3: ["Frenzy"],
+                6: ["Mindless Rage"],
+                10: ["Intimidating Presence"],
+                14: ["Retaliation"]
+            },
+            ("Barbarian", "Path of the Totem Warrior"): {
+                3: ["Spirit Seeker", "Totem Spirit"],
+                6: ["Aspect of the Beast"],
+                10: ["Spirit Walker"],
+                14: ["Totemic Attunement"]
+            },
+            ("Barbarian", "Path of the Battlerager"): {
+                3: ["Battlerager Armor"],
+                6: ["Reckless Abandon"],
+                10: ["Battlerager Charge"],
+                14: ["Spiked Retribution"]
+            },
+            ("Barbarian", "Path of the Ancestral Guardian"): {
+                3: ["Ancestral Protectors"],
+                6: ["Spirit Shield"],
+                10: ["Consult the Spirits"],
+                14: ["Vengeful Ancestors"]
+            },
+            ("Barbarian", "Path of the Storm Herald"): {
+                3: ["Storm Aura"],
+                6: ["Storm Soul"],
+                10: ["Shielding Storm"],
+                14: ["Raging Storm"]
+            },
+            ("Barbarian", "Path of the Zealot"): {
+                3: ["Divine Fury", "Warrior of the Gods"],
+                6: ["Fanatical Focus"],
+                10: ["Zealous Presence"],
+                14: ["Rage Beyond Death"]
+            },
+            ("Barbarian", "Path of the Beast"): {
+                3: ["Form of the Beast"],
+                6: ["Bestial Soul"],
+                10: ["Infectious Fury"],
+                14: ["Call the Hunt"]
+            },
+            ("Barbarian", "Path of Wild Magic"): {
+                3: ["Magic Awareness", "Wild Surge"],
+                6: ["Bolstering Magic"],
+                10: ["Unstable Backlash"],
+                14: ["Controlled Surge"]
+            },
+            # BARD
+            ("Bard", "College of Lore"): {
+                3: ["Bonus Proficiencies", "Cutting Words"],
+                6: ["Additional Magical Secrets"],
+                14: ["Peerless Skill"]
+            },
+            ("Bard", "College of Valor"): {
+                3: ["Bonus Proficiencies", "Combat Inspiration"],
+                6: ["Extra Attack"],
+                14: ["Battle Magic"]
+            },
+            ("Bard", "College of Glamour"): {
+                3: ["Mantle of Inspiration", "Enthralling Performance"],
+                6: ["Mantle of Majesty"],
+                14: ["Unbreakable Majesty"]
+            },
+            ("Bard", "College of Swords"): {
+                3: ["Bonus Proficiencies", "Fighting Style", "Blade Flourish"],
+                6: ["Extra Attack"],
+                14: ["Master's Flourish"]
+            },
+            ("Bard", "College of Whispers"): {
+                3: ["Psychic Blades", "Words of Terror"],
+                6: ["Mantle of Whispers"],
+                14: ["Shadow Lore"]
+            },
+            ("Bard", "College of Eloquence"): {
+                3: ["Silver Tongue", "Unsettling Words"],
+                6: ["Unfailing Inspiration", "Universal Speech"],
+                14: ["Infectious Inspiration"]
+            },
+            ("Bard", "College of Creation"): {
+                3: ["Mote of Potential", "Performance of Creation"],
+                6: ["Animating Performance"],
+                14: ["Creative Crescendo"]
+            },
+            ("Bard", "College of Spirits"): {
+                3: ["Guiding Whispers", "Spiritual Focus", "Tales from Beyond"],
+                6: ["Spirit Session"],
+                14: ["Mystical Connection"]
+            },
+            # CLERIC
+            ("Cleric", "Knowledge Domain"): {
+                1: ["Blessings of Knowledge"],
+                2: ["Channel Divinity: Knowledge of the Ages"],
+                6: ["Channel Divinity: Read Thoughts"],
+                8: ["Potent Spellcasting"],
+                17: ["Visions of the Past"]
+            },
+            ("Cleric", "Life Domain"): {
+                1: ["Bonus Proficiency", "Disciple of Life"],
+                2: ["Channel Divinity: Preserve Life"],
+                6: ["Blessed Healer"],
+                8: ["Divine Strike"],
+                17: ["Supreme Healing"]
+            },
+            ("Cleric", "Light Domain"): {
+                1: ["Bonus Cantrip", "Warding Flare"],
+                2: ["Channel Divinity: Radiance of the Dawn"],
+                6: ["Improved Flare"],
+                8: ["Potent Spellcasting"],
+                17: ["Corona of Light"]
+            },
+            ("Cleric", "Nature Domain"): {
+                1: ["Acolyte of Nature", "Bonus Proficiency"],
+                2: ["Channel Divinity: Charm Animals and Plants"],
+                6: ["Dampen Elements"],
+                8: ["Divine Strike"],
+                17: ["Master of Nature"]
+            },
+            ("Cleric", "Tempest Domain"): {
+                1: ["Wrath of the Storm"],
+                2: ["Channel Divinity: Destructive Wrath"],
+                6: ["Thunderbolt Strike"],
+                8: ["Divine Strike"],
+                17: ["Stormborn"]
+            },
+            ("Cleric", "Trickery Domain"): {
+                1: ["Blessing of the Trickster"],
+                2: ["Channel Divinity: Invoke Duplicity"],
+                6: ["Channel Divinity: Cloak of Shadows"],
+                8: ["Divine Strike"],
+                17: ["Improved Duplicity"]
+            },
+            ("Cleric", "War Domain"): {
+                1: ["Bonus Proficiency", "War Priest"],
+                2: ["Channel Divinity: Guided Strike"],
+                6: ["Channel Divinity: War God's Blessing"],
+                8: ["Divine Strike"],
+                17: ["Avatar of Battle"]
+            },
+            ("Cleric", "Arcana Domain"): {
+                1: ["Arcane Initiate"],
+                2: ["Channel Divinity: Arcane Abjuration"],
+                6: ["Spell Breaker"],
+                8: ["Potent Spellcasting"],
+                17: ["Arcane Mastery"]
+            },
+            ("Cleric", "Death Domain"): {
+                1: ["Bonus Proficiency", "Reaper"],
+                2: ["Channel Divinity: Touch of Death"],
+                6: ["Inescapable Destruction"],
+                8: ["Divine Strike"],
+                17: ["Improved Reaper"]
+            },
+            ("Cleric", "Forge Domain"): {
+                1: ["Bonus Proficiencies", "Blessing of the Forge"],
+                2: ["Channel Divinity: Artisan's Blessing"],
+                6: ["Soul of the Forge"],
+                8: ["Divine Strike"],
+                17: ["Saint of Forge and Fire"]
+            },
+            ("Cleric", "Grave Domain"): {
+                1: ["Circle of Mortality", "Eyes of the Grave"],
+                2: ["Channel Divinity: Path to the Grave"],
+                6: ["Sentinel at Death's Door"],
+                8: ["Potent Spellcasting"],
+                17: ["Keeper of Souls"]
+            },
+            ("Cleric", "Order Domain"): {
+                1: ["Bonus Proficiencies", "Voice of Authority"],
+                2: ["Channel Divinity: Order's Demand"],
+                6: ["Embodiment of the Law"],
+                8: ["Divine Strike"],
+                17: ["Order's Wrath"]
+            },
+            ("Cleric", "Peace Domain"): {
+                1: ["Implement of Peace", "Emboldening Bond"],
+                2: ["Channel Divinity: Balm of Peace"],
+                6: ["Protective Bond"],
+                8: ["Potent Spellcasting"],
+                17: ["Expansive Bond"]
+            },
+            ("Cleric", "Twilight Domain"): {
+                1: ["Eyes of Night", "Vigilant Blessing"],
+                2: ["Channel Divinity: Twilight Sanctuary"],
+                6: ["Steps of Night"],
+                8: ["Divine Strike"],
+                17: ["Twilight Shroud"]
+            },
+            ("Cleric", "Blood Domain"): {
+                1: ["Bloodletting Focus"],
+                2: ["Channel Divinity: Blood Puppet"],
+                6: ["Channel Divinity: Blood Curse"],
+                8: ["Divine Strike"],
+                17: ["Sanguine Mastery"]
+            },
+            # Add more class/subclass features for other classes as needed
+        }
+
+        self.bind_all("<Button-1>", self.clear_focus)
+        self.features_text.bind("<Button-1>", self.show_feature_description)
+
+    def clear_focus(self, event):
+        widget = event.widget
+        # If the clicked widget is not an Entry or Combobox, remove focus
+        if not isinstance(widget, (tk.Entry, ttk.Combobox)):
+            self.focus_set()
+
+    def update_subclasses(self, event=None):
+        chosen_class = self.class_var.get()
+        subclasses = self.subclasses.get(chosen_class, [])
+        if subclasses:
+            self.subclass_dropdown.config(values=subclasses)
+            self.subclass_var.set("Select Subclass")
+        else:
+            self.subclass_dropdown.config(values=[])
+            self.subclass_var.set("No subclass available")
+
     def change_profile_picture(self):
         # Use broader types if Pillow is available; otherwise limit to PNG/GIF (native Tk)
         filetypes = [("Image files", "*.png *.jpg *.jpeg *.gif")] if PIL_AVAILABLE else [("PNG or GIF", "*.png *.gif")]
@@ -263,8 +733,59 @@ class DnDCharacterSheet(tk.Tk):
             bar_value = current if current <= next_level_xp else next_level_xp
             self.xp_bar.config(maximum=next_level_xp, value=bar_value)
             self.level_label.config(text=f"Level: {self.level.get()}")
+            self.update_features()
         except Exception:
             pass
+
+    def update_features(self):
+        self.features_text.delete("1.0", "end")
+        chosen_class = self.class_var.get()
+        chosen_subclass = self.subclass_var.get()
+        # Sanitize subclass value
+        if chosen_subclass in ("Select Subclass", "", "No subclass available"):
+            chosen_subclass = None
+        level = self.level.get()
+        features = []
+
+        # Add class features
+        if chosen_class in self.class_features:
+            for lvl, feats in self.class_features[chosen_class].items():
+                if lvl <= level:
+                    features.extend(feats)
+
+        # Add subclass features only if there is a valid subclass
+        if chosen_subclass:
+            key = (chosen_class, chosen_subclass)
+            if key in self.subclass_features:
+                for lvl, feats in self.subclass_features[key].items():
+                    if lvl <= level:
+                        features.extend(feats)
+
+        if features:
+            for feat in features:
+                self.features_text.insert("end", f"• {feat}\n")
+        else:
+            self.features_text.insert("end", "No features available.")
+
+    def show_feature_description(self, event):
+        index = self.features_text.index(f"@{event.x},{event.y}")
+        line = self.features_text.get(f"{index} linestart", f"{index} lineend").strip()
+        feature_name = line[2:] if line.startswith("• ") else line
+        chosen_class = self.class_var.get()
+        chosen_subclass = self.subclass_var.get()
+
+        # Treat empty or placeholder subclass as None
+        if chosen_subclass in ("Select Subclass", "", "No subclass available"):
+            chosen_subclass = None
+
+        # Try subclass first, then class only
+        desc = self.feature_descriptions.get((chosen_class, chosen_subclass, feature_name)) \
+               or self.feature_descriptions.get((chosen_class, None, feature_name)) \
+               or "No description available."
+
+        popup = tk.Toplevel(self)
+        popup.title(feature_name)
+        tk.Label(popup, text=desc, wraplength=400, justify="left", padx=10, pady=10).pack()
 
     def update_modifier(self, var, label):
         try:
@@ -283,6 +804,7 @@ class DnDCharacterSheet(tk.Tk):
                 label.config(text=f"+{modifier}" if modifier >= 0 else f"{modifier}")
             except Exception:
                 label.config(text="")
+
 
 
 if __name__ == "__main__":
