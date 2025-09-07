@@ -438,365 +438,212 @@ class DnDCharacterSheet(tk.Tk):
                 2: ["Infuse Item"],
             },
         }
+        # Feature descriptions: (class, subclass or None, feature name) -> description
+        self.feature_descriptions = {}
+
+        # Subclass features: (class, subclass) -> {level: [features]}
         self.subclass_features = {
             # BARBARIAN
             ("Barbarian", "Path of the Berserker"): {
                 3: ["Frenzy"],
+                6: ["Mindless Rage"],
+                10: ["Intimidating Presence"],
+                14: ["Retaliation"]
             },
             ("Barbarian", "Path of the Totem Warrior"): {
                 3: ["Spirit Seeker", "Totem Spirit"],
+                6: ["Aspect of the Beast"],
+                10: ["Spirit Walker"],
+                14: ["Totemic Attunement"]
             },
             ("Barbarian", "Path of the Battlerager"): {
                 3: ["Battlerager Armor"],
+                6: ["Reckless Abandon"],
+                10: ["Battlerager Charge"],
+                14: ["Spiked Retribution"]
             },
             ("Barbarian", "Path of the Ancestral Guardian"): {
                 3: ["Ancestral Protectors"],
+                6: ["Spirit Shield"],
+                10: ["Consult the Spirits"],
+                14: ["Vengeful Ancestors"]
             },
             ("Barbarian", "Path of the Storm Herald"): {
                 3: ["Storm Aura"],
+                6: ["Storm Soul"],
+                10: ["Shielding Storm"],
+                14: ["Raging Storm"]
             },
             ("Barbarian", "Path of the Zealot"): {
                 3: ["Divine Fury", "Warrior of the Gods"],
+                6: ["Fanatical Focus"],
+                10: ["Zealous Presence"],
+                14: ["Rage Beyond Death"]
             },
             ("Barbarian", "Path of the Beast"): {
                 3: ["Form of the Beast"],
+                6: ["Bestial Soul"],
+                10: ["Infectious Fury"],
+                14: ["Call the Hunt"]
             },
             ("Barbarian", "Path of Wild Magic"): {
                 3: ["Magic Awareness", "Wild Surge"],
+                6: ["Bolstering Magic"],
+                10: ["Unstable Backlash"],
+                14: ["Controlled Surge"]
             },
             # BARD
             ("Bard", "College of Lore"): {
                 3: ["Bonus Proficiencies", "Cutting Words"],
+                6: ["Additional Magical Secrets"],
+                14: ["Peerless Skill"]
             },
             ("Bard", "College of Valor"): {
                 3: ["Bonus Proficiencies", "Combat Inspiration"],
+                6: ["Extra Attack"],
+                14: ["Battle Magic"]
             },
             ("Bard", "College of Glamour"): {
                 3: ["Mantle of Inspiration", "Enthralling Performance"],
+                6: ["Mantle of Majesty"],
+                14: ["Unbreakable Majesty"]
             },
             ("Bard", "College of Swords"): {
                 3: ["Bonus Proficiencies", "Fighting Style", "Blade Flourish"],
+                6: ["Extra Attack"],
+                14: ["Master's Flourish"]
             },
             ("Bard", "College of Whispers"): {
                 3: ["Psychic Blades", "Words of Terror"],
+                6: ["Mantle of Whispers"],
+                14: ["Shadow Lore"]
             },
             ("Bard", "College of Eloquence"): {
                 3: ["Silver Tongue", "Unsettling Words"],
+                6: ["Unfailing Inspiration", "Universal Speech"],
+                14: ["Infectious Inspiration"]
             },
             ("Bard", "College of Creation"): {
                 3: ["Mote of Potential", "Performance of Creation"],
+                6: ["Animating Performance"],
+                14: ["Creative Crescendo"]
             },
             ("Bard", "College of Spirits"): {
                 3: ["Guiding Whispers", "Spiritual Focus", "Tales from Beyond"],
+                6: ["Spirit Session"],
+                14: ["Mystical Connection"]
             },
-            # CLERIC (Domains)
+            # CLERIC
             ("Cleric", "Knowledge Domain"): {
-                1: ["Domain Spells", "Blessings of Knowledge"],
+                1: ["Blessings of Knowledge"],
+                2: ["Channel Divinity: Knowledge of the Ages"],
+                6: ["Channel Divinity: Read Thoughts"],
+                8: ["Potent Spellcasting"],
+                17: ["Visions of the Past"]
             },
             ("Cleric", "Life Domain"): {
-                1: ["Domain Spells", "Bonus Proficiency", "Disciple of Life"],
+                1: ["Bonus Proficiency", "Disciple of Life"],
+                2: ["Channel Divinity: Preserve Life"],
+                6: ["Blessed Healer"],
+                8: ["Divine Strike"],
+                17: ["Supreme Healing"]
             },
             ("Cleric", "Light Domain"): {
-                1: ["Domain Spells", "Bonus Cantrip", "Warding Flare"],
+                1: ["Bonus Cantrip", "Warding Flare"],
+                2: ["Channel Divinity: Radiance of the Dawn"],
+                6: ["Improved Flare"],
+                8: ["Potent Spellcasting"],
+                17: ["Corona of Light"]
             },
             ("Cleric", "Nature Domain"): {
-                1: ["Domain Spells", "Acolyte of Nature", "Bonus Proficiency"],
+                1: ["Acolyte of Nature", "Bonus Proficiency"],
+                2: ["Channel Divinity: Charm Animals and Plants"],
+                6: ["Dampen Elements"],
+                8: ["Divine Strike"],
+                17: ["Master of Nature"]
             },
             ("Cleric", "Tempest Domain"): {
-                1: ["Domain Spells", "Wrath of the Storm"],
+                1: ["Wrath of the Storm"],
+                2: ["Channel Divinity: Destructive Wrath"],
+                6: ["Thunderbolt Strike"],
+                8: ["Divine Strike"],
+                17: ["Stormborn"]
             },
             ("Cleric", "Trickery Domain"): {
-                1: ["Domain Spells", "Blessing of the Trickster"],
+                1: ["Blessing of the Trickster"],
+                2: ["Channel Divinity: Invoke Duplicity"],
+                6: ["Channel Divinity: Cloak of Shadows"],
+                8: ["Divine Strike"],
+                17: ["Improved Duplicity"]
             },
             ("Cleric", "War Domain"): {
-                1: ["Domain Spells", "Bonus Proficiency", "War Priest"],
+                1: ["Bonus Proficiency", "War Priest"],
+                2: ["Channel Divinity: Guided Strike"],
+                6: ["Channel Divinity: War God's Blessing"],
+                8: ["Divine Strike"],
+                17: ["Avatar of Battle"]
             },
             ("Cleric", "Arcana Domain"): {
-                1: ["Domain Spells", "Arcane Initiate"],
+                1: ["Arcane Initiate"],
+                2: ["Channel Divinity: Arcane Abjuration"],
+                6: ["Spell Breaker"],
+                8: ["Potent Spellcasting"],
+                17: ["Arcane Mastery"]
             },
             ("Cleric", "Death Domain"): {
-                1: ["Domain Spells", "Bonus Proficiency", "Reaper"],
+                1: ["Bonus Proficiency", "Reaper"],
+                2: ["Channel Divinity: Touch of Death"],
+                6: ["Inescapable Destruction"],
+                8: ["Divine Strike"],
+                17: ["Improved Reaper"]
             },
             ("Cleric", "Forge Domain"): {
-                1: ["Domain Spells", "Bonus Proficiency", "Blessing of the Forge"],
+                1: ["Bonus Proficiencies", "Blessing of the Forge"],
+                2: ["Channel Divinity: Artisan's Blessing"],
+                6: ["Soul of the Forge"],
+                8: ["Divine Strike"],
+                17: ["Saint of Forge and Fire"]
             },
             ("Cleric", "Grave Domain"): {
-                1: ["Domain Spells", "Circle of Mortality", "Eyes of the Grave"],
+                1: ["Circle of Mortality", "Eyes of the Grave"],
+                2: ["Channel Divinity: Path to the Grave"],
+                6: ["Sentinel at Death's Door"],
+                8: ["Potent Spellcasting"],
+                17: ["Keeper of Souls"]
             },
             ("Cleric", "Order Domain"): {
-                1: ["Domain Spells", "Bonus Proficiency", "Voice of Authority"],
+                1: ["Bonus Proficiencies", "Voice of Authority"],
+                2: ["Channel Divinity: Order's Demand"],
+                6: ["Embodiment of the Law"],
+                8: ["Divine Strike"],
+                17: ["Order's Wrath"]
             },
             ("Cleric", "Peace Domain"): {
-                1: ["Domain Spells", "Implement of Peace", "Emboldening Bond"],
+                1: ["Implement of Peace", "Emboldening Bond"],
+                2: ["Channel Divinity: Balm of Peace"],
+                6: ["Protective Bond"],
+                8: ["Potent Spellcasting"],
+                17: ["Expansive Bond"]
             },
             ("Cleric", "Twilight Domain"): {
-                1: ["Domain Spells", "Bonus Proficiency", "Eyes of Night", "Vigilant Blessing"],
+                1: ["Eyes of Night", "Vigilant Blessing"],
+                2: ["Channel Divinity: Twilight Sanctuary"],
+                6: ["Steps of Night"],
+                8: ["Divine Strike"],
+                17: ["Twilight Shroud"]
             },
             ("Cleric", "Blood Domain"): {
-                1: ["Domain Spells", "Bloodletting Focus"],
-            },
-            # DRUID
-            ("Druid", "Circle of the Land"): {
-                2: ["Circle Spells", "Bonus Cantrip", "Natural Recovery"],
-            },
-            ("Druid", "Circle of the Moon"): {
-                2: ["Combat Wild Shape", "Circle Forms"],
-            },
-            ("Druid", "Circle of Dreams"): {
-                2: ["Balm of the Summer Court"],
-            },
-            ("Druid", "Circle of the Shepherd"): {
-                2: ["Speech of the Woods", "Spirit Totem"],
-            },
-            ("Druid", "Circle of Spores"): {
-                2: ["Circle Spells", "Halo of Spores", "Symbiotic Entity"],
-            },
-            ("Druid", "Circle of Stars"): {
-                2: ["Star Map", "Starry Form"],
-            },
-            ("Druid", "Circle of Wildfire"): {
-                2: ["Circle Spells", "Summon Wildfire Spirit"],
-            },
-            # FIGHTER
-            ("Fighter", "Champion"): {
-                3: ["Improved Critical"],
-            },
-            ("Fighter", "Battle Master"): {
-                3: ["Combat Superiority", "Student of War"],
-            },
-            ("Fighter", "Eldritch Knight"): {
-                3: ["Spellcasting", "Weapon Bond"],
-            },
-            ("Fighter", "Arcane Archer"): {
-                3: ["Arcane Archer Lore", "Arcane Shot"],
-            },
-            ("Fighter", "Cavalier"): {
-                3: ["Bonus Proficiency", "Born to the Saddle", "Unwavering Mark"],
-            },
-            ("Fighter", "Samurai"): {
-                3: ["Bonus Proficiency", "Fighting Spirit"],
-            },
-            ("Fighter", "Purple Dragon Knight (Banneret)"): {
-                3: ["Rallying Cry"],
-            },
-            ("Fighter", "Echo Knight"): {
-                3: ["Manifest Echo"],
-            },
-            ("Fighter", "Psi Warrior"): {
-                3: ["Psionic Power", "Psionic Armament"],
-            },
-            ("Fighter", "Rune Knight"): {
-                3: ["Bonus Proficiency", "Rune Carver", "Giant's Might"],
-            },
-            ("Fighter", "Gunslinger"): {
-                3: ["Gunsmith", "Adept Marksman"],
-            },
-            # MONK
-            ("Monk", "Way of the Open Hand"): {
-                3: ["Open Hand Technique"],
-            },
-            ("Monk", "Way of Shadow"): {
-                3: ["Shadow Arts"],
-            },
-            ("Monk", "Way of the Four Elements"): {
-                3: ["Disciple of the Elements"],
-            },
-            ("Monk", "Way of the Drunken Master"): {
-                3: ["Bonus Proficiencies", "Drunken Technique"],
-            },
-            ("Monk", "Way of the Kensei"): {
-                3: ["Path of the Kensei", "Kensei Weapons", "Agile Parry", "Kensei's Shot", "Way of the Brush"],
-            },
-            ("Monk", "Way of the Sun Soul"): {
-                3: ["Radiant Sun Bolt"],
-            },
-            ("Monk", "Way of Mercy"): {
-                3: ["Implements of Mercy", "Hands of Healing", "Hands of Harm"],
-            },
-            ("Monk", "Way of the Astral Self"): {
-                3: ["Arms of the Astral Self"],
-            },
-            # PALADIN
-            ("Paladin", "Oath of Devotion"): {
-                3: ["Oath Spells", "Channel Divinity (Sacred Weapon, Turn the Unholy)"],
-            },
-            ("Paladin", "Oath of the Ancients"): {
-                3: ["Oath Spells", "Channel Divinity (Nature's Wrath, Turn the Faithless)"],
-            },
-            ("Paladin", "Oath of Vengeance"): {
-                3: ["Oath Spells", "Channel Divinity (Abjure Enemy, Vow of Enmity)"],
-            },
-            ("Paladin", "Oath of the Crown"): {
-                3: ["Oath Spells", "Channel Divinity (Champion Challenge, Turn the Tide)"],
-            },
-            ("Paladin", "Oath of Conquest"): {
-                3: ["Oath Spells", "Channel Divinity (Conquering Presence, Guided Strike)"],
-            },
-            ("Paladin", "Oath of Redemption"): {
-                3: ["Oath Spells", "Channel Divinity (Emissary of Peace, Rebuke the Violent)"],
-            },
-            ("Paladin", "Oath of Glory"): {
-                3: ["Oath Spells", "Channel Divinity (Peerless Athlete, Inspiring Smite)"],
-            },
-            ("Paladin", "Oath of the Watchers"): {
-                3: ["Oath Spells", "Channel Divinity (Watcher's Will, Abjure the Extraplanar)"],
-            },
-            ("Paladin", "Oathbreaker"): {
-                3: ["Control Undead", "Dreadful Aspect"],
-            },
-            # RANGER
-            ("Ranger", "Hunter"): {
-                3: ["Hunter's Prey"],
-            },
-            ("Ranger", "Beast Master"): {
-                3: ["Ranger's Companion"],
-            },
-            ("Ranger", "Gloom Stalker"): {
-                3: ["Gloom Stalker Magic", "Dread Ambusher", "Umbral Sight"],
-            },
-            ("Ranger", "Horizon Walker"): {
-                3: ["Horizon Walker Magic", "Detect Portal", "Planar Warrior"],
-            },
-            ("Ranger", "Monster Slayer"): {
-                3: ["Monster Slayer Magic", "Hunter's Sense", "Slayer's Prey"],
-            },
-            ("Ranger", "Fey Wanderer"): {
-                3: ["Fey Wanderer Magic", "Dreadful Strikes", "Otherworldly Glamour"],
-            },
-            ("Ranger", "Swarmkeeper"): {
-                3: ["Swarmkeeper Magic", "Gathered Swarm"],
-            },
-            ("Ranger", "Drakewarden"): {
-                3: ["Draconic Gift", "Drake Companion"],
-            },
-            # ROGUE
-            ("Rogue", "Thief"): {
-                3: ["Fast Hands", "Second-Story Work"],
-            },
-            ("Rogue", "Assassin"): {
-                3: ["Bonus Proficiencies", "Assassinate"],
-            },
-            ("Rogue", "Arcane Trickster"): {
-                3: ["Spellcasting", "Mage Hand Legerdemain"],
-            },
-            ("Rogue", "Mastermind"): {
-                3: ["Master of Intrigue", "Master of Tactics"],
-            },
-            ("Rogue", "Swashbuckler"): {
-                3: ["Fancy Footwork", "Rakish Audacity"],
-            },
-            ("Rogue", "Inquisitive"): {
-                3: ["Ear for Deceit", "Eye for Detail", "Insightful Fighting"],
-            },
-            ("Rogue", "Scout"): {
-                3: ["Skirmisher", "Survivalist"],
-            },
-            ("Rogue", "Phantom"): {
-                3: ["Whispers of the Dead", "Wails from the Grave"],
-            },
-            ("Rogue", "Soulknife"): {
-                3: ["Psionic Power", "Psychic Blades"],
-            },
-            # SORCERER
-            ("Sorcerer", "Draconic Bloodline"): {
-                1: ["Dragon Ancestor", "Draconic Resilience"],
-            },
-            ("Sorcerer", "Wild Magic"): {
-                1: ["Wild Magic Surge", "Tides of Chaos"],
-            },
-            ("Sorcerer", "Divine Soul"): {
-                1: ["Divine Magic", "Favored by the Gods"],
-            },
-            ("Sorcerer", "Shadow Magic"): {
-                1: ["Eyes of the Dark", "Strength of the Grave"],
-            },
-            ("Sorcerer", "Storm Sorcery"): {
-                1: ["Wind Speaker", "Tempestuous Magic"],
-            },
-            ("Sorcerer", "Aberrant Mind"): {
-                1: ["Aberrant Mind Spells", "Telepathic Speech"],
-            },
-            ("Sorcerer", "Clockwork Soul"): {
-                1: ["Clockwork Magic", "Restore Balance"],
-            },
-            # WARLOCK
-            ("Warlock", "The Archfey"): {
-                1: ["Expanded Spell List", "Fey Presence"],
-            },
-            ("Warlock", "The Fiend"): {
-                1: ["Expanded Spell List", "Dark One's Blessing"],
-            },
-            ("Warlock", "The Great Old One"): {
-                1: ["Expanded Spell List", "Awakened Mind"],
-            },
-            ("Warlock", "The Undying"): {
-                1: ["Expanded Spell List", "Among the Dead"],
-            },
-            ("Warlock", "The Celestial"): {
-                1: ["Expanded Spell List", "Bonus Cantrips", "Healing Light"],
-            },
-            ("Warlock", "The Hexblade"): {
-                1: ["Expanded Spell List", "Hexblade's Curse", "Hex Warrior"],
-            },
-            ("Warlock", "The Fathomless"): {
-                1: ["Expanded Spell List", "Tentacle of the Deeps", "Gift of the Sea"],
-            },
-            ("Warlock", "The Genie"): {
-                1: ["Expanded Spell List", "Genie's Vessel"],
-            },
-            ("Warlock", "The Undead"): {
-                1: ["Expanded Spell List", "Form of Dread"],
-            },
-            # WIZARD
-            ("Wizard", "School of Abjuration"): {
-                2: ["Abjuration Savant", "Arcane Ward"],
-            },
-            ("Wizard", "School of Conjuration"): {
-                2: ["Conjuration Savant", "Minor Conjuration"],
-            },
-            ("Wizard", "School of Divination"): {
-                2: ["Divination Savant", "Portent"],
-            },
-            ("Wizard", "School of Enchantment"): {
-                2: ["Enchantment Savant", "Hypnotic Gaze"],
-            },
-            ("Wizard", "School of Evocation"): {
-                2: ["Evocation Savant", "Sculpt Spells"],
-            },
-            ("Wizard", "School of Illusion"): {
-                2: ["Illusion Savant", "Improved Minor Illusion"],
-            },
-            ("Wizard", "School of Necromancy"): {
-                2: ["Necromancy Savant", "Grim Harvest"],
-            },
-            ("Wizard", "School of Transmutation"): {
-                2: ["Transmutation Savant", "Minor Alchemy"],
-            },
-            ("Wizard", "Bladesinging"): {
-                2: ["Training in War and Song", "Bladesong"],
-            },
-            ("Wizard", "War Magic"): {
-                2: ["Arcane Deflection", "Tactical Wit"],
-            },
-            ("Wizard", "Order of Scribes"): {
-                2: ["Wizardly Quill", "Awakened Spellbook"],
-            },
-            # ARTIFICER
-            ("Artificer", "Alchemist"): {
-                3: ["Alchemist Spells", "Experimental Elixir"],
-            },
-            ("Artificer", "Artillerist"): {
-                3: ["Artillerist Spells", "Eldritch Cannon"],
-            },
-            ("Artificer", "Battle Smith"): {
-                3: ["Battle Smith Spells", "Battle Ready", "Steel Defender"],
-            },
-            ("Artificer", "Armorer"): {
-                3: ["Armorer Spells", "Tools of the Trade", "Arcane Armor", "Armor Model"],
-            },
+                1: ["Bloodletting Focus"],
+                2: ["Channel Divinity: Blood Puppet"],
+                6: ["Channel Divinity: Blood Curse"],
+                8: ["Divine Strike"],
+                17: ["Sanguine Mastery"]
+            },
+            # Add more class/subclass features for other classes as needed
         }
 
         self.bind_all("<Button-1>", self.clear_focus)
+        self.features_text.bind("<Button-1>", self.show_feature_description)
 
     def clear_focus(self, event):
         widget = event.widget
@@ -894,22 +741,51 @@ class DnDCharacterSheet(tk.Tk):
         self.features_text.delete("1.0", "end")
         chosen_class = self.class_var.get()
         chosen_subclass = self.subclass_var.get()
+        # Sanitize subclass value
+        if chosen_subclass in ("Select Subclass", "", "No subclass available"):
+            chosen_subclass = None
         level = self.level.get()
         features = []
+
+        # Add class features
         if chosen_class in self.class_features:
             for lvl, feats in self.class_features[chosen_class].items():
                 if lvl <= level:
                     features.extend(feats)
-        key = (chosen_class, chosen_subclass)
-        if key in self.subclass_features:
-            for lvl, feats in self.subclass_features[key].items():
-                if lvl <= level:
-                    features.extend(feats)
+
+        # Add subclass features only if there is a valid subclass
+        if chosen_subclass:
+            key = (chosen_class, chosen_subclass)
+            if key in self.subclass_features:
+                for lvl, feats in self.subclass_features[key].items():
+                    if lvl <= level:
+                        features.extend(feats)
+
         if features:
             for feat in features:
                 self.features_text.insert("end", f"• {feat}\n")
         else:
             self.features_text.insert("end", "No features available.")
+
+    def show_feature_description(self, event):
+        index = self.features_text.index(f"@{event.x},{event.y}")
+        line = self.features_text.get(f"{index} linestart", f"{index} lineend").strip()
+        feature_name = line[2:] if line.startswith("• ") else line
+        chosen_class = self.class_var.get()
+        chosen_subclass = self.subclass_var.get()
+
+        # Treat empty or placeholder subclass as None
+        if chosen_subclass in ("Select Subclass", "", "No subclass available"):
+            chosen_subclass = None
+
+        # Try subclass first, then class only
+        desc = self.feature_descriptions.get((chosen_class, chosen_subclass, feature_name)) \
+               or self.feature_descriptions.get((chosen_class, None, feature_name)) \
+               or "No description available."
+
+        popup = tk.Toplevel(self)
+        popup.title(feature_name)
+        tk.Label(popup, text=desc, wraplength=400, justify="left", padx=10, pady=10).pack()
 
     def update_modifier(self, var, label):
         try:
@@ -928,6 +804,7 @@ class DnDCharacterSheet(tk.Tk):
                 label.config(text=f"+{modifier}" if modifier >= 0 else f"{modifier}")
             except Exception:
                 label.config(text="")
+
 
 
 if __name__ == "__main__":
